@@ -1,8 +1,45 @@
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Code, Cpu, Globe, ShieldCheck, Zap, BarChart } from 'lucide-react';
+import { useProductStore } from '../store/useProductStore';
 
 export function Home() {
+  const { products } = useProductStore();
+  const softwareProducts = products.filter(p => p.category === 'software').slice(0, 3);
+  const webProducts = products.filter(p => p.category === 'web').slice(0, 3);
+  const toolProducts = products.filter(p => p.category === 'tool').slice(0, 3);
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  };
+
+  const renderProductBanner = (title: string, products: any[], link: string) => (
+    <section className="py-12 px-6 max-w-7xl mx-auto">
+      <div className="flex justify-between items-end mb-8">
+        <h2 className="text-3xl font-bold text-slate-900">{title}</h2>
+        <Link to={link} className="text-purple-600 font-bold flex items-center gap-1 hover:gap-2 transition-all">
+          Xem tất cả <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+      <div className="grid md:grid-cols-3 gap-6">
+        {products.map(product => (
+          <div key={product.id} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-all flex flex-col">
+            <div className="w-full h-48 mb-4 rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center">
+              {product.image ? (
+                <img src={product.image} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="text-6xl">{product.icon}</div>
+              )}
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">{product.name}</h3>
+            <p className="text-slate-500 text-sm mb-4 line-clamp-2 flex-grow">{product.desc}</p>
+            <div className="text-purple-600 font-bold text-lg mt-auto">{formatPrice(product.price)}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
@@ -153,6 +190,11 @@ export function Home() {
           ))}
         </motion.div>
       </div>
+
+      {/* Product Banners */}
+      {renderProductBanner("Mua bán phần mềm", softwareProducts, "/phan-mem")}
+      {renderProductBanner("Thiết kế Web", webProducts, "/thiet-ke-website")}
+      {renderProductBanner("App tool", toolProducts, "/app-tools")}
 
       {/* Bento Grid Services */}
       <section className="py-24 px-6 max-w-7xl mx-auto">
