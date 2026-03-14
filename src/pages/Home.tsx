@@ -9,7 +9,8 @@ export function Home() {
   const webProducts = products.filter(p => p.category === 'web').slice(0, 3);
   const toolProducts = products.filter(p => p.category === 'tool').slice(0, 3);
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number | undefined) => {
+    if (typeof price !== 'number') return 'Liên hệ';
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
 
@@ -22,20 +23,22 @@ export function Home() {
         </Link>
       </div>
       <div className="grid md:grid-cols-3 gap-6">
-        {products.map(product => (
+        {products && products.length > 0 ? products.map(product => (
           <div key={product.id} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-all flex flex-col">
             <div className="w-full h-48 mb-4 rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center">
               {product.image ? (
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src={product.image} alt={product.name || 'Product'} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               ) : (
-                <div className="text-6xl">{product.icon}</div>
+                <div className="text-6xl">{product.icon || '📦'}</div>
               )}
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">{product.name}</h3>
-            <p className="text-slate-500 text-sm mb-4 line-clamp-2 flex-grow">{product.desc}</p>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">{product.name || 'Sản phẩm'}</h3>
+            <p className="text-slate-500 text-sm mb-4 line-clamp-2 flex-grow">{product.desc || ''}</p>
             <div className="text-purple-600 font-bold text-lg mt-auto">{formatPrice(product.price)}</div>
           </div>
-        ))}
+        )) : (
+          <p className="text-slate-500">Chưa có sản phẩm nào.</p>
+        )}
       </div>
     </section>
   );
